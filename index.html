@@ -144,7 +144,7 @@
 
 <div style="text-align: center; margin-top: 20px;">
   <button id="descargar-nuevamente" class="boton boton-descargar" style="display: none;">Descargar nuevamente</button>
-  <button id="compartir-whatsapp" class="boton boton-whatsapp" style="display: none;">Compartir por WhatsApp</button>
+  <button id="ver-imagen" class="boton boton-whatsapp" style="display: none;">Ver en pantalla completa</button>
   <button id="volver-inicio" class="boton boton-cambiar" style="display: none;">Volver al inicio</button>
 </div>
 
@@ -291,7 +291,7 @@ function mostrarNotificacion(mensaje) {
 
 function mostrarBotonesFinales() {
   document.getElementById('descargar-nuevamente').style.display = 'inline-block';
-  document.getElementById('compartir-whatsapp').style.display = 'inline-block';
+  document.getElementById('ver-imagen').style.display = 'inline-block';
   document.getElementById('volver-inicio').style.display = 'inline-block';
 }
 
@@ -304,12 +304,37 @@ document.getElementById('descargar-nuevamente').addEventListener('click', () => 
   }
 });
 
-document.getElementById('compartir-whatsapp').addEventListener('click', () => {
-  const nombre = document.getElementById('input-nombre').value;
-  const valor = formatValor(document.getElementById('input-valor').value);
-  const mensaje = `¡Hola! Te comparto el comprobante de transferencia:\n\n*Nombre:* ${nombre}\n*Valor:* ${valor}\n\n(Adjunta imagen)`;
-  const url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
-  window.open(url, '_blank');
+document.getElementById('ver-imagen').addEventListener('click', () => {
+  html2canvas(document.getElementById('captura')).then(canvas => {
+    const imgURL = canvas.toDataURL('image/png');
+    const newWindow = window.open();
+    newWindow.document.write(`
+      <html>
+        <head>
+          <title>Vista del Comprobante</title>
+          <style>
+            body, html {
+              margin: 0; padding: 0;
+              background: #000;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 100vh;
+              overflow: auto;
+            }
+            img {
+              width: 100%;
+              height: auto;
+              object-fit: contain;
+            }
+          </style>
+        </head>
+        <body>
+          <img src="${imgURL}" alt="Comprobante">
+        </body>
+      </html>
+    `);
+  });
 });
 
 document.getElementById('volver-inicio').addEventListener('click', () => {
