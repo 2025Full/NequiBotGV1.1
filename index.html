@@ -245,7 +245,7 @@ function descargarComprobante(formato) {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      mostrarNotificacion(`✔️ Comprobante descargado como ${nombreArchivo}. Busca en la carpeta Descargas.`);
+      mostrarNotificacion(`✔️ Comprobante descargado como ${nombreArchivo}.`);
     }, `image/${formato}`);
   });
 }
