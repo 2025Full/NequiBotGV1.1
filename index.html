@@ -227,118 +227,60 @@ function generarFecha() {
   const f = fecha.toLocaleDateString('es-ES', opts);
   let h = fecha.getHours(), m = fecha.getMinutes().toString().padStart(2, '0'),
       ampm = h >= 12 ? 'p. m.' : 'a. m.';
-  h = h % 12 || 12;
-  document.getElementById('fecha').innerHTML = `${f}<br>las ${h}:${m} ${ampm}`;
-}
-
-function generarReferencia() {
-  document.getElementById('referencia').value = 'M' + Math.floor(1e7 + Math.random() * 9e7);
+  h = h % 12;
+  h = h ? h : 12;
+  document.getElementById('fecha').textContent = `${f}, ${h}:${m} ${ampm}`;
 }
 
 function formatValor(valor) {
-  valor = valor.replace(/\D/g, '');
-  if (!valor) return "$ 0,00";
-  return `$ ${valor.replace(/\B(?=(\d{3})+(?!\d))/g, '.')},00`;
+  let v = parseFloat(valor);
+  return isNaN(v) ? "" : v.toLocaleString();
+}
+
+function generarReferencia() {
+  const referencia = Math.floor(Math.random() * 1000000000);
+  document.getElementById('referencia').value = referencia;
 }
 
 function descargarComprobante(formato) {
   html2canvas(document.getElementById('captura')).then(canvas => {
-    canvas.toBlob(blob => {
-      const nombreArchivo = `comprobante.${formato}`;
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = nombreArchivo;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      mostrarNotificacion(`✔️ Comprobante descargado como ${nombreArchivo}.`);
-    }, `image/${formato}`);
+    const enlace = document.createElement('a');
+    enlace.href = canvas.toDataURL('image/' + formato);
+    enlace.download = `comprobante_nequi.${formato}`;
+    enlace.click();
   });
 }
 
 function descargarPDF() {
-  html2canvas(document.getElementById('captura')).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF();
-    const width = pdf.internal.pageSize.getWidth();
-    const height = (canvas.height * width) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, width, height);
-    pdf.save('comprobante.pdf');
-    mostrarNotificacion("✔️ Comprobante descargado como PDF.");
+  const doc = new jsPDF();
+  doc.html(document.getElementById('captura'), {
+    callback: function (doc) {
+      doc.save("comprobante_nequi.pdf");
+    },
+    margin: [10, 10, 10, 10]
   });
-}
-
-function mostrarNotificacion(mensaje) {
-  const noti = document.createElement('div');
-  noti.textContent = mensaje;
-  noti.style.position = 'fixed';
-  noti.style.bottom = '20px';
-  noti.style.left = '50%';
-  noti.style.transform = 'translateX(-50%)';
-  noti.style.background = '#2196f3';
-  noti.style.color = 'white';
-  noti.style.padding = '14px 24px';
-  noti.style.borderRadius = '12px';
-  noti.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
-  noti.style.fontSize = '15px';
-  noti.style.zIndex = '9999';
-  document.body.appendChild(noti);
-  setTimeout(() => { document.body.removeChild(noti); }, 4000);
 }
 
 function mostrarBotonesFinales() {
-  document.getElementById('descargar-nuevamente').style.display = 'inline-block';
   document.getElementById('ver-imagen').style.display = 'inline-block';
+  document.getElementById('descargar-nuevamente').style.display = 'inline-block';
   document.getElementById('volver-inicio').style.display = 'inline-block';
 }
 
-document.getElementById('descargar-nuevamente').addEventListener('click', () => {
-  const formato = document.getElementById('formato').value;
-  if (formato === 'pdf') {
-    descargarPDF();
-  } else {
-    descargarComprobante(formato);
-  }
+document.getElementById('ver-imagen').addEventListener('click', () => {
+  const imgSrc = document.querySelector('#captura img').src;
+  const fullScreenWindow = window.open("", "_blank");
+  fullScreenWindow.document.write('<img src="' + imgSrc + '" style="width:100%;">');
 });
 
-document.getElementById('ver-imagen').addEventListener('click', () => {
-  html2canvas(document.getElementById('captura')).then(canvas => {
-    const imgURL = canvas.toDataURL('image/png');
-    const newWindow = window.open();
-    newWindow.document.write(`
-      <html>
-        <head>
-          <title>Vista del Comprobante</title>
-          <style>
-            body, html {
-              margin: 0; padding: 0;
-              background: #000;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100vh;
-              overflow: auto;
-            }
-            img {
-              width: 100%;
-              height: auto;
-              object-fit: contain;
-            }
-          </style>
-        </head>
-        <body>
-          <img src="${imgURL}" alt="Comprobante">
-        </body>
-      </html>
-    `);
-  });
+document.getElementById('descargar-nuevamente').addEventListener('click', () => {
+  document.getElementById('pantalla').style.display = 'block';
+  document.getElementById('captura').style.display = 'none';
 });
 
 document.getElementById('volver-inicio').addEventListener('click', () => {
-  location.reload();
+  document.getElementById('pantalla').style.display = 'block';
+  document.getElementById('captura').style.display = 'none';
 });
 </script>
 </body>
