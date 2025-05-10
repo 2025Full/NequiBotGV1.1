@@ -109,11 +109,13 @@
   </style>
 </head>
 <body>
+
 <div class="formulario" id="pantalla">
   <div class="titulo">NequiBotGV</div>
   <button id="whatsapp" class="boton boton-whatsapp">¿No tienes clave? Contáctanos</button>
   <button id="clave-ingreso" class="boton boton-clave">Ingresar Clave</button>
   <button id="cambiar-clave-boton" class="boton boton-cambiar">Cambiar Clave</button>
+
   <div id="contenido-oculto" style="display: none;">
     <input type="text" id="input-nombre" class="input-campo" placeholder="Nombre del destinatario">
     <input type="text" id="input-valor" class="input-campo" placeholder="Valor en $">
@@ -129,6 +131,7 @@
     </div>
   </div>
 </div>
+
 <div class="container" id="captura">
   <img src="comprobante_base.png" alt="Fondo">
   <input type="text" id="nombre" class="input-overlay" readonly>
@@ -137,11 +140,13 @@
   <div id="fecha" class="input-overlay"></div>
   <input type="text" id="referencia" class="input-overlay" readonly>
 </div>
+
 <div style="text-align: center; margin-top: 20px;">
   <button id="descargar-nuevamente" class="boton boton-descargar" style="display: none;">Descargar nuevamente</button>
   <button id="compartir-whatsapp" class="boton boton-whatsapp" style="display: none;">Compartir por WhatsApp</button>
   <button id="volver-inicio" class="boton boton-cambiar" style="display: none;">Volver al inicio</button>
 </div>
+
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
 let claveAcceso = "142025";
@@ -192,12 +197,16 @@ document.getElementById('guardar-nueva-clave').addEventListener('click', () => {
 document.getElementById('generar').addEventListener('click', () => {
   document.getElementById('pantalla').style.display = 'none';
   document.getElementById('captura').style.display = 'block';
+
   document.getElementById('nombre').value = document.getElementById('input-nombre').value;
   document.getElementById('valor').value = formatValor(document.getElementById('input-valor').value);
   document.getElementById('nequi').value = document.getElementById('input-nequi').value;
+
   generarFecha();
   generarReferencia();
+
   const formato = document.getElementById('formato').value;
+
   setTimeout(() => {
     descargarComprobante(formato);
     mostrarBotonesFinales();
@@ -226,10 +235,16 @@ function formatValor(valor) {
 
 function descargarComprobante(formato) {
   html2canvas(document.getElementById('captura')).then(canvas => {
-    const link = document.createElement('a');
-    link.href = canvas.toDataURL(`image/${formato}`);
-    link.download = `comprobante.${formato}`;
-    link.click();
+    canvas.toBlob(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `comprobante.${formato}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }, `image/${formato}`);
   });
 }
 
