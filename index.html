@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -67,12 +68,10 @@
     .boton-clave { background: linear-gradient(90deg, #cc0000, #ff1744); }
     .boton-cambiar { background: linear-gradient(90deg, #6a1b9a, #8e24aa); }
     .boton-descargar { background: linear-gradient(90deg, #1976d2, #2196f3); }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     .container {
       position: relative;
       width: 100%;
@@ -83,12 +82,10 @@
       overflow: hidden;
       display: none;
     }
-
     .container img {
       width: 100%;
       display: block;
     }
-
     .input-overlay {
       position: absolute;
       background: transparent;
@@ -100,7 +97,6 @@
       font-family: 'Inter', sans-serif;
       outline: none;
     }
-
     #nombre    { top: 388.02px; left: 172.22px; width: 160px; }
     #valor     { top: 411.02px; left: 172.22px; width: 160px; }
     #nequi     { top: 434.02px; left: 172.22px; width: 160px; }
@@ -109,167 +105,72 @@
   </style>
 </head>
 <body>
-
-<div class="formulario" id="pantalla">
-  <div class="titulo">NequiBotGV</div>
-  <button id="whatsapp" class="boton boton-whatsapp">¿No tienes clave? Contáctanos</button>
-  <button id="clave-ingreso" class="boton boton-clave">Ingresar Clave</button>
-  <button id="cambiar-clave-boton" class="boton boton-cambiar">Cambiar Clave</button>
-
-  <div id="contenido-oculto" style="display: none;">
-    <input type="text" id="input-nombre" class="input-campo" placeholder="Nombre del destinatario">
-    <input type="text" id="input-valor" class="input-campo" placeholder="Valor en $">
-    <input type="text" id="input-nequi" class="input-campo" placeholder="Número Nequi">
-    <select id="formato" class="input-campo">
-      <option value="png">Formato: PNG</option>
-      <option value="jpg">Formato: JPG</option>
-    </select>
-    <button id="generar" class="boton boton-descargar">Generar Comprobante</button>
-    <div id="admin-panel" style="display: none;">
-      <input type="text" id="nueva-clave" class="input-campo" placeholder="Nueva clave de acceso">
-      <button id="guardar-nueva-clave" class="boton">Guardar Nueva Clave</button>
+  <div class="formulario" id="pantalla">
+    <div class="titulo">NequiBotGV</div>
+    <button id="whatsapp" class="boton boton-whatsapp">¿No tienes clave? Contáctanos</button>
+    <button id="clave-ingreso" class="boton boton-clave">Ingresar Clave</button>
+    <button id="cambiar-clave-boton" class="boton boton-cambiar">Cambiar Clave</button>
+    <div id="contenido-oculto" style="display: none;">
+      <input type="text" id="input-nombre" class="input-campo" placeholder="Nombre del destinatario">
+      <input type="text" id="input-valor" class="input-campo" placeholder="Valor en $">
+      <input type="text" id="input-nequi" class="input-campo" placeholder="Número Nequi">
+      <select id="formato" class="input-campo">
+        <option value="png">Formato: PNG</option>
+        <option value="jpg">Formato: JPG</option>
+      </select>
+      <button id="generar" class="boton boton-descargar">Generar Comprobante</button>
     </div>
   </div>
-</div>
-
-<div class="container" id="captura">
-  <img src="comprobante_base.png" alt="Fondo">
-  <input type="text" id="nombre" class="input-overlay" readonly>
-  <input type="text" id="valor" class="input-overlay" readonly>
-  <input type="text" id="nequi" class="input-overlay" readonly>
-  <div id="fecha" class="input-overlay"></div>
-  <input type="text" id="referencia" class="input-overlay" readonly>
-</div>
-
-<div style="text-align: center; margin-top: 20px;">
-  <button id="descargar-nuevamente" class="boton boton-descargar" style="display: none;">Descargar nuevamente</button>
-  <button id="compartir-whatsapp" class="boton boton-whatsapp" style="display: none;">Compartir por WhatsApp</button>
-  <button id="volver-inicio" class="boton boton-cambiar" style="display: none;">Volver al inicio</button>
-</div>
-
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<script>
-let claveAcceso = "142025";
-const claveAdmin = "1395";
-
-document.getElementById('whatsapp').addEventListener('click', () => {
-  window.open('https://wa.me/573178793834?text=Hola%2C%20me%20gustar%C3%ADa%20obtener%20la%20clave%20de%20NequiBotGV.', '_blank');
-});
-
-document.getElementById('clave-ingreso').addEventListener('click', () => {
-  const clave = prompt("Ingrese la clave de acceso:");
-  if (clave === claveAdmin) {
-    document.getElementById('admin-panel').style.display = 'block';
-    mostrarFormulario();
-  } else if (clave === claveAcceso) {
-    mostrarFormulario();
-  } else {
-    alert("Clave incorrecta. Acceso denegado.");
-  }
-});
-
-document.getElementById('cambiar-clave-boton').addEventListener('click', () => {
-  const clave = prompt("Ingrese la clave de administrador:");
-  if (clave === claveAdmin) {
-    document.getElementById('admin-panel').style.display = 'block';
-    mostrarFormulario();
-  } else {
-    alert("Clave de administrador incorrecta.");
-  }
-});
-
-function mostrarFormulario() {
-  document.getElementById('contenido-oculto').style.display = 'block';
-  document.getElementById('whatsapp').style.display = 'none';
-  document.getElementById('clave-ingreso').style.display = 'none';
-  document.getElementById('cambiar-clave-boton').style.display = 'none';
-}
-
-document.getElementById('guardar-nueva-clave').addEventListener('click', () => {
-  const nueva = document.getElementById('nueva-clave').value.trim();
-  if (nueva) {
-    claveAcceso = nueva;
-    alert("Clave de acceso actualizada exitosamente.");
-    document.getElementById('nueva-clave').value = "";
-  }
-});
-
-document.getElementById('generar').addEventListener('click', () => {
-  document.getElementById('pantalla').style.display = 'none';
-  document.getElementById('captura').style.display = 'block';
-
-  document.getElementById('nombre').value = document.getElementById('input-nombre').value;
-  document.getElementById('valor').value = formatValor(document.getElementById('input-valor').value);
-  document.getElementById('nequi').value = document.getElementById('input-nequi').value;
-
-  generarFecha();
-  generarReferencia();
-
-  const formato = document.getElementById('formato').value;
-
-  setTimeout(() => {
-    descargarComprobante(formato);
-    mostrarBotonesFinales();
-  }, 500);
-});
-
-function generarFecha() {
-  const fecha = new Date();
-  const opts = { year: 'numeric', month: 'long', day: 'numeric' };
-  const f = fecha.toLocaleDateString('es-ES', opts);
-  let h = fecha.getHours(), m = fecha.getMinutes().toString().padStart(2, '0'),
-      ampm = h >= 12 ? 'p. m.' : 'a. m.';
-  h = h % 12 || 12;
-  document.getElementById('fecha').innerHTML = `${f}<br>las ${h}:${m} ${ampm}`;
-}
-
-function generarReferencia() {
-  document.getElementById('referencia').value = 'M' + Math.floor(1e7 + Math.random() * 9e7);
-}
-
-function formatValor(valor) {
-  valor = valor.replace(/\D/g, '');
-  if (!valor) return "$ 0,00";
-  return `$ ${valor.replace(/\B(?=(\d{3})+(?!\d))/g, '.')},00`;
-}
-
-function descargarComprobante(formato) {
-  html2canvas(document.getElementById('captura')).then(canvas => {
-    canvas.toBlob(blob => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `comprobante.${formato}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    }, `image/${formato}`);
-  });
-}
-
-function mostrarBotonesFinales() {
-  document.getElementById('descargar-nuevamente').style.display = 'inline-block';
-  document.getElementById('compartir-whatsapp').style.display = 'inline-block';
-  document.getElementById('volver-inicio').style.display = 'inline-block';
-}
-
-document.getElementById('descargar-nuevamente').addEventListener('click', () => {
-  const formato = document.getElementById('formato').value;
-  descargarComprobante(formato);
-});
-
-document.getElementById('compartir-whatsapp').addEventListener('click', () => {
-  const nombre = document.getElementById('input-nombre').value;
-  const valor = formatValor(document.getElementById('input-valor').value);
-  const mensaje = `¡Hola! Te comparto el comprobante de transferencia:\n\n*Nombre:* ${nombre}\n*Valor:* ${valor}\n\n(Adjunta imagen)`;
-  const url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
-  window.open(url, '_blank');
-});
-
-document.getElementById('volver-inicio').addEventListener('click', () => {
-  location.reload();
-});
-</script>
+  <div class="container" id="captura">
+    <img src="comprobante_base.png" alt="Fondo" crossorigin="anonymous">
+    <input type="text" id="nombre" class="input-overlay" readonly>
+    <input type="text" id="valor" class="input-overlay" readonly>
+    <input type="text" id="nequi" class="input-overlay" readonly>
+    <div id="fecha" class="input-overlay"></div>
+    <input type="text" id="referencia" class="input-overlay" readonly>
+  </div>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script>
+    let claveAcceso = "142025";
+    document.getElementById('clave-ingreso').addEventListener('click', () => {
+      const clave = prompt("Ingrese la clave de acceso:");
+      if (clave === claveAcceso) document.getElementById('contenido-oculto').style.display = 'block';
+      else alert("Clave incorrecta.");
+    });
+    document.getElementById('generar').addEventListener('click', () => {
+      document.getElementById('pantalla').style.display = 'none';
+      document.getElementById('captura').style.display = 'block';
+      document.getElementById('nombre').value = document.getElementById('input-nombre').value;
+      document.getElementById('valor').value = formatValor(document.getElementById('input-valor').value);
+      document.getElementById('nequi').value = document.getElementById('input-nequi').value;
+      generarFecha();
+      generarReferencia();
+      const formato = document.getElementById('formato').value;
+      setTimeout(() => descargarComprobante(formato), 500);
+    });
+    function generarFecha() {
+      const fecha = new Date();
+      const opts = { year: 'numeric', month: 'long', day: 'numeric' };
+      let h = fecha.getHours(), m = fecha.getMinutes().toString().padStart(2, '0'), ampm = h >= 12 ? 'p. m.' : 'a. m.';
+      h = h % 12 || 12;
+      document.getElementById('fecha').innerHTML = `${fecha.toLocaleDateString('es-ES', opts)}<br>las ${h}:${m} ${ampm}`;
+    }
+    function generarReferencia() {
+      document.getElementById('referencia').value = 'M' + Math.floor(1e7 + Math.random() * 9e7);
+    }
+    function formatValor(valor) {
+      valor = valor.replace(/\D/g, '');
+      if (!valor) return "$ 0,00";
+      return `$ ${valor.replace(/\B(?=(\d{3})+(?!\d))/g, '.')},00`;
+    }
+    function descargarComprobante(formato) {
+      html2canvas(document.getElementById('captura'), { useCORS: true }).then(canvas => {
+        const enlace = document.createElement('a');
+        enlace.href = canvas.toDataURL(`image/${formato}`);
+        enlace.download = `comprobante.${formato}`;
+        enlace.click();
+      });
+    }
+  </script>
 </body>
 </html>
