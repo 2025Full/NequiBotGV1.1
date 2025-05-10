@@ -268,9 +268,23 @@ function mostrarBotonesFinales() {
 }
 
 document.getElementById('ver-imagen').addEventListener('click', () => {
-  const imgSrc = document.querySelector('#captura img').src;
-  const fullScreenWindow = window.open("", "_blank");
-  fullScreenWindow.document.write('<img src="' + imgSrc + '" style="width:100%;">');
+  const elem = document.documentElement;
+
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.mozRequestFullScreen) { /* Firefox */
+    elem.mozRequestFullScreen();
+  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE/Edge */
+    elem.msRequestFullscreen();
+  }
+
+  // Aquí agregamos una pequeña espera para que se muestre correctamente
+  setTimeout(() => {
+    const imgSrc = document.querySelector('#captura img').src;
+    document.querySelector('img').src = imgSrc;
+  }, 500);
 });
 
 document.getElementById('descargar-nuevamente').addEventListener('click', () => {
