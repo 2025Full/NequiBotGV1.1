@@ -123,6 +123,7 @@
     <select id="formato" class="input-campo">
       <option value="png">Formato: PNG</option>
       <option value="jpg">Formato: JPG</option>
+      <option value="pdf">Formato: PDF</option>
     </select>
     <button id="generar" class="boton boton-descargar">Generar Comprobante</button>
     <div id="admin-panel" style="display: none;">
@@ -147,7 +148,10 @@
   <button id="volver-inicio" class="boton boton-cambiar" style="display: none;">Volver al inicio</button>
 </div>
 
+<!-- Librerías necesarias -->
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
 let claveAcceso = "142025";
 const claveAdmin = "1395";
@@ -208,7 +212,11 @@ document.getElementById('generar').addEventListener('click', () => {
   const formato = document.getElementById('formato').value;
 
   setTimeout(() => {
-    descargarComprobante(formato);
+    if (formato === 'pdf') {
+      descargarPDF();
+    } else {
+      descargarComprobante(formato);
+    }
     mostrarBotonesFinales();
   }, 500);
 });
@@ -250,6 +258,19 @@ function descargarComprobante(formato) {
   });
 }
 
+function descargarPDF() {
+  html2canvas(document.getElementById('captura')).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+    const width = pdf.internal.pageSize.getWidth();
+    const height = (canvas.height * width) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+    pdf.save('comprobante.pdf');
+    mostrarNotificacion("✔️ Comprobante descargado como PDF.");
+  });
+}
+
 function mostrarNotificacion(mensaje) {
   const noti = document.createElement('div');
   noti.textContent = mensaje;
@@ -276,7 +297,11 @@ function mostrarBotonesFinales() {
 
 document.getElementById('descargar-nuevamente').addEventListener('click', () => {
   const formato = document.getElementById('formato').value;
-  descargarComprobante(formato);
+  if (formato === 'pdf') {
+    descargarPDF();
+  } else {
+    descargarComprobante(formato);
+  }
 });
 
 document.getElementById('compartir-whatsapp').addEventListener('click', () => {
