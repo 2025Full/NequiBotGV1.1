@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>NequiBotGV - Generador</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       padding: 0;
@@ -20,7 +21,7 @@
     .formulario {
       background: #111;
       padding: 40px 30px;
-      border-radius: 20px;
+      border-radius: 0;
       box-shadow: 0 10px 30px rgba(0, 128, 255, 0.4);
       width: 90%;
       max-width: 400px;
@@ -41,7 +42,7 @@
       padding: 14px;
       margin: 12px 0;
       border: 1px solid #444;
-      border-radius: 12px;
+      border-radius: 0;
       font-size: 16px;
       background: #222;
       color: #fff;
@@ -53,25 +54,19 @@
       width: 90%;
       font-size: 16px;
       border: none;
-      border-radius: 12px;
+      border-radius: 0;
       font-family: 'Inter', sans-serif;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.4s ease;
       color: #fff;
-      opacity: 0;
-      animation: fadeIn 1s ease forwards;
     }
     .boton:hover { opacity: 0.9; }
     .boton-whatsapp { background: linear-gradient(90deg, #00c853, #00e676); }
     .boton-clave { background: linear-gradient(90deg, #cc0000, #ff1744); }
     .boton-cambiar { background: linear-gradient(90deg, #6a1b9a, #8e24aa); }
     .boton-descargar { background: linear-gradient(90deg, #1976d2, #2196f3); }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .boton-pantalla { background: linear-gradient(90deg, #ff6f00, #ffa000); }
 
     .container {
       position: relative;
@@ -79,9 +74,11 @@
       max-width: 390px;
       margin: 20px auto;
       background: #fff;
-      border-radius: 20px;
+      border-radius: 0;
       overflow: hidden;
       display: none;
+      transform-origin: top left;
+      transform: scale(1);
     }
 
     .container img {
@@ -99,6 +96,9 @@
       text-align: right;
       font-family: 'Inter', sans-serif;
       outline: none;
+      -webkit-user-select: none;
+      user-select: none;
+      pointer-events: none;
     }
 
     #nombre    { top: 388.02px; left: 172.22px; width: 160px; }
@@ -123,9 +123,9 @@
     <select id="formato" class="input-campo">
       <option value="png">Formato: PNG</option>
       <option value="jpg">Formato: JPG</option>
-      <option value="pdf">Formato: PDF</option>
     </select>
     <button id="generar" class="boton boton-descargar">Generar Comprobante</button>
+    <button id="ver-pantalla" class="boton boton-pantalla" style="display: none;">Ver en Pantalla Completa</button>
     <div id="admin-panel" style="display: none;">
       <input type="text" id="nueva-clave" class="input-campo" placeholder="Nueva clave de acceso">
       <button id="guardar-nueva-clave" class="boton">Guardar Nueva Clave</button>
@@ -142,16 +142,7 @@
   <input type="text" id="referencia" class="input-overlay" readonly>
 </div>
 
-<div style="text-align: center; margin-top: 20px;">
-  <button id="descargar-nuevamente" class="boton boton-descargar" style="display: none;">Descargar nuevamente</button>
-  <button id="ver-imagen" class="boton boton-whatsapp" style="display: none;">Ver en pantalla completa</button>
-  <button id="volver-inicio" class="boton boton-cambiar" style="display: none;">Volver al inicio</button>
-</div>
-
-<!-- Librerías necesarias -->
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <script>
 let claveAcceso = "142025";
 const claveAdmin = "1395";
@@ -212,12 +203,10 @@ document.getElementById('generar').addEventListener('click', () => {
   const formato = document.getElementById('formato').value;
 
   setTimeout(() => {
-    if (formato === 'pdf') {
-      descargarPDF();
-    } else {
-      descargarComprobante(formato);
-    }
-    mostrarBotonesFinales();
+    descargarComprobante(formato);
+    document.getElementById('ver-pantalla').style.display = 'block';
+    document.getElementById('pantalla').style.display = 'block';
+    document.getElementById('captura').style.display = 'none';
   }, 500);
 });
 
@@ -227,74 +216,39 @@ function generarFecha() {
   const f = fecha.toLocaleDateString('es-ES', opts);
   let h = fecha.getHours(), m = fecha.getMinutes().toString().padStart(2, '0'),
       ampm = h >= 12 ? 'p. m.' : 'a. m.';
-  h = h % 12;
-  h = h ? h : 12;
-  document.getElementById('fecha').textContent = `${f}, ${h}:${m} ${ampm}`;
-}
-
-function formatValor(valor) {
-  let v = parseFloat(valor);
-  return isNaN(v) ? "" : v.toLocaleString();
+  h = h % 12 || 12;
+  document.getElementById('fecha').innerHTML = `${f}<br>las ${h}:${m} ${ampm}`;
 }
 
 function generarReferencia() {
-  const referencia = Math.floor(Math.random() * 1000000000);
-  document.getElementById('referencia').value = referencia;
+  document.getElementById('referencia').value = 'M' + Math.floor(1e7 + Math.random() * 9e7);
+}
+
+function formatValor(valor) {
+  valor = valor.replace(/\D/g, '');
+  if (!valor) return "$ 0,00";
+  return `$ ${valor.replace(/\B(?=(\d{3})+(?!\d))/g, '.')},00`;
 }
 
 function descargarComprobante(formato) {
   html2canvas(document.getElementById('captura')).then(canvas => {
-    const enlace = document.createElement('a');
-    enlace.href = canvas.toDataURL('image/' + formato);
-    enlace.download = `comprobante_nequi.${formato}`;
-    enlace.click();
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL(`image/${formato}`);
+    link.download = `comprobante.${formato}`;
+    link.click();
   });
 }
 
-function descargarPDF() {
-  const doc = new jsPDF();
-  doc.html(document.getElementById('captura'), {
-    callback: function (doc) {
-      doc.save("comprobante_nequi.pdf");
-    },
-    margin: [10, 10, 10, 10]
-  });
-}
+// Botón para ver el comprobante en pantalla completa
+document.getElementById('ver-pantalla').addEventListener('click', () => {
+  document.getElementById('pantalla').style.display = 'none';
+  document.getElementById('captura').style.display = 'block';
 
-function mostrarBotonesFinales() {
-  document.getElementById('ver-imagen').style.display = 'inline-block';
-  document.getElementById('descargar-nuevamente').style.display = 'inline-block';
-  document.getElementById('volver-inicio').style.display = 'inline-block';
-}
-
-document.getElementById('ver-imagen').addEventListener('click', () => {
-  const elem = document.documentElement;
-
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } else if (elem.mozRequestFullScreen) { /* Firefox */
-    elem.mozRequestFullScreen();
-  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-    elem.webkitRequestFullscreen();
-  } else if (elem.msRequestFullscreen) { /* IE/Edge */
-    elem.msRequestFullscreen();
+  if (document.fullscreenEnabled) {
+    document.getElementById('captura').requestFullscreen().catch(err => {
+      alert(`Error al entrar en pantalla completa: ${err.message}`);
+    });
   }
-
-  // Aquí agregamos una pequeña espera para que se muestre correctamente
-  setTimeout(() => {
-    const imgSrc = document.querySelector('#captura img').src;
-    document.querySelector('img').src = imgSrc;
-  }, 500);
-});
-
-document.getElementById('descargar-nuevamente').addEventListener('click', () => {
-  document.getElementById('pantalla').style.display = 'block';
-  document.getElementById('captura').style.display = 'none';
-});
-
-document.getElementById('volver-inicio').addEventListener('click', () => {
-  document.getElementById('pantalla').style.display = 'block';
-  document.getElementById('captura').style.display = 'none';
 });
 </script>
 </body>
