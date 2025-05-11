@@ -6,7 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
     body {
       margin: 0;
       padding: 0;
@@ -21,7 +23,7 @@
     .formulario {
       background: #111;
       padding: 40px 30px;
-      border-radius: 0;
+      border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0, 128, 255, 0.4);
       width: 90%;
       max-width: 400px;
@@ -42,7 +44,7 @@
       padding: 14px;
       margin: 12px 0;
       border: 1px solid #444;
-      border-radius: 0;
+      border-radius: 12px;
       font-size: 16px;
       background: #222;
       color: #fff;
@@ -54,7 +56,7 @@
       width: 90%;
       font-size: 16px;
       border: none;
-      border-radius: 0;
+      border-radius: 12px;
       font-family: 'Inter', sans-serif;
       font-weight: 700;
       cursor: pointer;
@@ -66,7 +68,6 @@
     .boton-clave { background: linear-gradient(90deg, #cc0000, #ff1744); }
     .boton-cambiar { background: linear-gradient(90deg, #6a1b9a, #8e24aa); }
     .boton-descargar { background: linear-gradient(90deg, #1976d2, #2196f3); }
-    .boton-pantalla { background: linear-gradient(90deg, #ff6f00, #ffa000); }
 
     .container {
       position: relative;
@@ -74,7 +75,7 @@
       max-width: 390px;
       margin: 20px auto;
       background: #fff;
-      border-radius: 0;
+      border-radius: 0px;
       overflow: hidden;
       display: none;
       transform-origin: top left;
@@ -96,16 +97,39 @@
       text-align: right;
       font-family: 'Inter', sans-serif;
       outline: none;
-      -webkit-user-select: none;
-      user-select: none;
       pointer-events: none;
     }
 
+    /* Posiciones fijas sobre imagen de 390px de ancho */
     #nombre    { top: 388.02px; left: 172.22px; width: 160px; }
     #valor     { top: 411.02px; left: 172.22px; width: 160px; }
     #nequi     { top: 434.02px; left: 172.22px; width: 160px; }
     #fecha     { top: 460.02px; left: 172.22px; width: 160px; line-height: 1.3; }
     #referencia{ top: 505.82px; left: 172.22px; width: 160px; font-size: 14px; }
+
+    #verPantallaCompleta {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 20px;
+      font-size: 16px;
+      background: #1e88e5;
+      color: #fff;
+      border: none;
+      border-radius: 0px;
+      font-family: 'Inter', sans-serif;
+      font-weight: bold;
+      z-index: 9999;
+    }
+
+    @media (max-width: 420px) {
+      .container {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -125,7 +149,6 @@
       <option value="jpg">Formato: JPG</option>
     </select>
     <button id="generar" class="boton boton-descargar">Generar Comprobante</button>
-    <button id="ver-pantalla" class="boton boton-pantalla" style="display: none;">Ver en Pantalla Completa</button>
     <div id="admin-panel" style="display: none;">
       <input type="text" id="nueva-clave" class="input-campo" placeholder="Nueva clave de acceso">
       <button id="guardar-nueva-clave" class="boton">Guardar Nueva Clave</button>
@@ -141,6 +164,8 @@
   <div id="fecha" class="input-overlay"></div>
   <input type="text" id="referencia" class="input-overlay" readonly>
 </div>
+
+<button id="verPantallaCompleta">Ver en Pantalla Completa</button>
 
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
@@ -202,12 +227,23 @@ document.getElementById('generar').addEventListener('click', () => {
 
   const formato = document.getElementById('formato').value;
 
+  // Mostrar botón de pantalla completa
+  document.getElementById('verPantallaCompleta').style.display = 'block';
+
   setTimeout(() => {
     descargarComprobante(formato);
-    document.getElementById('ver-pantalla').style.display = 'block';
-    document.getElementById('pantalla').style.display = 'block';
-    document.getElementById('captura').style.display = 'none';
   }, 500);
+});
+
+document.getElementById('verPantallaCompleta').addEventListener('click', () => {
+  const contenedor = document.getElementById('captura');
+  if (contenedor.requestFullscreen) {
+    contenedor.requestFullscreen();
+  } else if (contenedor.webkitRequestFullscreen) {
+    contenedor.webkitRequestFullscreen();
+  } else if (contenedor.msRequestFullscreen) {
+    contenedor.msRequestFullscreen();
+  }
 });
 
 function generarFecha() {
@@ -238,18 +274,6 @@ function descargarComprobante(formato) {
     link.click();
   });
 }
-
-// Botón para ver el comprobante en pantalla completa
-document.getElementById('ver-pantalla').addEventListener('click', () => {
-  document.getElementById('pantalla').style.display = 'none';
-  document.getElementById('captura').style.display = 'block';
-
-  if (document.fullscreenEnabled) {
-    document.getElementById('captura').requestFullscreen().catch(err => {
-      alert(`Error al entrar en pantalla completa: ${err.message}`);
-    });
-  }
-});
 </script>
 </body>
 </html>
