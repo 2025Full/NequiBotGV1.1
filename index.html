@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>NequiBotGV - Generador</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter :wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -91,7 +91,7 @@
       position: absolute;
       background: transparent;
       border: none;
-      font-size: 14px;
+      font-size: 14px; /* Tamaño consistente */
       color: #2E1A47;
       font-weight: 500;
       text-align: right;
@@ -103,7 +103,7 @@
     /* Posiciones fijas sobre imagen de 390px de ancho */
     #nombre    { top: 388.02px; left: 172.22px; width: 160px; }
     #valor     { top: 411.02px; left: 172.22px; width: 160px; }
-    #nequi     { top: 434.02px; left: 172.22px; width: 160px; }
+    #nequi     { top: 434.02px; left: 172.22px; width: 160px; } /* Igual tamaño que otros campos */
     #fecha     { top: 460.02px; left: 172.22px; width: 160px; line-height: 1.3; }
     #referencia{ top: 505.82px; left: 172.22px; width: 160px; font-size: 14px; }
 
@@ -167,13 +167,13 @@
 
 <button id="verPantallaCompleta">Ver en Pantalla Completa</button>
 
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js "></script>
 <script>
 let claveAcceso = "142025";
 const claveAdmin = "1395";
 
 document.getElementById('whatsapp').addEventListener('click', () => {
-  window.open('https://wa.me/573178793834?text=Hola%2C%20me%20gustar%C3%ADa%20obtener%20la%20clave%20de%20NequiBotGV.', '_blank');
+  window.open('https://wa.me/573178793834?text=Hola%2C%20me%20gustar%C3%ADa%20obtener%20la%20clave%20de%20NequiBotGV. ', '_blank');
 });
 
 document.getElementById('clave-ingreso').addEventListener('click', () => {
@@ -215,6 +215,8 @@ document.getElementById('guardar-nueva-clave').addEventListener('click', () => {
 });
 
 document.getElementById('generar').addEventListener('click', () => {
+  if (!validarEntradas()) return;
+
   document.getElementById('pantalla').style.display = 'none';
   document.getElementById('captura').style.display = 'block';
 
@@ -246,6 +248,29 @@ document.getElementById('verPantallaCompleta').addEventListener('click', () => {
   }
 });
 
+function validarEntradas() {
+  const nombre = document.getElementById('input-nombre').value.trim();
+  const valor = document.getElementById('input-valor').value.trim();
+  const nequi = document.getElementById('input-nequi').value.trim();
+
+  if (!nombre || !valor || !nequi) {
+    alert("Todos los campos son obligatorios.");
+    return false;
+  }
+
+  if (isNaN(valor.replace(/\D/g, ''))) {
+    alert("El valor debe ser un número válido.");
+    return false;
+  }
+
+  if (nequi.length < 10) {
+    alert("El número Nequi debe tener al menos 10 dígitos.");
+    return false;
+  }
+
+  return true;
+}
+
 function generarFecha() {
   const fecha = new Date();
   const opts = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -267,11 +292,28 @@ function formatValor(valor) {
 }
 
 function descargarComprobante(formato) {
-  html2canvas(document.getElementById('captura')).then(canvas => {
-    const link = document.createElement('a');
-    link.href = canvas.toDataURL(`image/${formato}`);
-    link.download = `comprobante.${formato}`;
-    link.click();
+  const img = document.querySelector('#captura img');
+
+  // Ensure image is loaded
+  if (!img.complete) {
+    alert("La imagen de fondo no se ha cargado completamente. Inténtalo nuevamente.");
+    return;
+  }
+
+  html2canvas(document.getElementById('captura'), {
+    scale: 2, // Mejora la calidad de la imagen
+    logging: true, // Habilita logs para depuración
+    useCORS: true // Permite cargar imágenes externas si es necesario
+  }).then(canvas => {
+    try {
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL(`image/${formato}`);
+      link.download = `comprobante.${formato}`;
+      link.click();
+    } catch (error) {
+      console.error("Error al descargar el comprobante:", error);
+      alert("Ocurrió un error al generar el comprobante. Inténtalo nuevamente.");
+    }
   });
 }
 </script>
