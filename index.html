@@ -91,21 +91,24 @@
       position: absolute;
       background: transparent;
       border: none;
-      font-size: 14px; /* Tamaño consistente */
+      font-size: 14px;
       color: #2E1A47;
       font-weight: 500;
       text-align: right;
       font-family: 'Inter', sans-serif;
       outline: none;
       pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* Posiciones fijas sobre imagen de 390px de ancho */
-    #nombre    { top: 388.02px; left: 172.22px; width: 160px; }
-    #valor     { top: 411.02px; left: 172.22px; width: 160px; }
-    #nequi     { top: 434.02px; left: 172.22px; width: 160px; } /* Igual tamaño que otros campos */
-    #fecha     { top: 460.02px; left: 172.22px; width: 160px; line-height: 1.3; }
-    #referencia{ top: 505.82px; left: 172.22px; width: 160px; font-size: 14px; }
+    #nombre    { top: calc((388.02px + 56.7px - 18.9px) * var(--escala)); left: calc((172.22px + 37.8px - 3.78px) * var(--escala)); width: calc(160px * var(--escala)); }
+    #valor     { top: calc((411.02px + 56.7px - 18.9px) * var(--escala)); left: calc((172.22px + 37.8px - 3.78px) * var(--escala)); width: calc(160px * var(--escala)); }
+    #nequi     { top: calc((434.02px + 56.7px - 18.9px) * var(--escala)); left: calc((172.22px + 37.8px - 3.78px) * var(--escala)); width: calc(160px * var(--escala)); }
+    #fecha     { top: calc((460.02px + 56.7px - 18.9px) * var(--escala)); left: calc((172.22px + 37.8px - 3.78px) * var(--escala)); width: calc(160px * var(--escala)); line-height: 1.3; }
+    #referencia{ top: calc((505.82px + 56.7px - 18.9px) * var(--escala)); left: calc((172.22px + 37.8px - 3.78px) * var(--escala)); width: calc(160px * var(--escala)); font-size: 14px; }
 
     #verPantallaCompleta {
       display: none;
@@ -156,7 +159,7 @@
   </div>
 </div>
 
-<div class="container" id="captura">
+<div class="container" id="captura" style="--escala: 1;">
   <img src="comprobante_base.png" alt="Fondo">
   <input type="text" id="nombre" class="input-overlay" readonly>
   <input type="text" id="valor" class="input-overlay" readonly>
@@ -217,8 +220,15 @@ document.getElementById('guardar-nueva-clave').addEventListener('click', () => {
 document.getElementById('generar').addEventListener('click', () => {
   if (!validarEntradas()) return;
 
+  const container = document.getElementById('captura');
+  const img = document.querySelector('#captura img');
+
+  // Ajustar escala según el tamaño de la pantalla
+  const escala = Math.min(window.innerWidth / 390, 1); // Escala máxima de 1
+  container.style.setProperty('--escala', escala);
+
   document.getElementById('pantalla').style.display = 'none';
-  document.getElementById('captura').style.display = 'block';
+  container.style.display = 'block';
 
   document.getElementById('nombre').value = document.getElementById('input-nombre').value;
   document.getElementById('valor').value = formatValor(document.getElementById('input-valor').value);
@@ -245,6 +255,13 @@ document.getElementById('verPantallaCompleta').addEventListener('click', () => {
     contenedor.webkitRequestFullscreen();
   } else if (contenedor.msRequestFullscreen) {
     contenedor.msRequestFullscreen();
+  }
+});
+
+// Detectar cuando se sale del modo de pantalla completa
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) {
+    document.getElementById('captura').style.transform = 'scale(1)';
   }
 });
 
@@ -302,14 +319,25 @@ function descargarComprobante(formato) {
 
   html2canvas(document.getElementById('captura'), {
     scale: 2, // Mejora la calidad de la imagen
-    logging: true, // Habilita logs para depuración
-    useCORS: true // Permite cargar imágenes externas si es necesario
+    logging: true,
+    useCORS: true, // Permite cargar imágenes externas
+    allowTaint: false, // Evita problemas con tainting
+    scrollY: -window.scrollY,
+    scrollX: -window.scrollX
   }).then(canvas => {
     try {
       const link = document.createElement('a');
       link.href = canvas.toDataURL(`image/${formato}`);
       link.download = `comprobante.${formato}`;
-      link.click();
+
+      // Detectar si el navegador es móvil
+      if (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+        // Abrir el archivo en una nueva pestaña para navegadores móviles
+        window.open(link.href, '_blank');
+      } else {
+        // Descargar directamente en navegadores de escritorio
+        link.click();
+      }
     } catch (error) {
       console.error("Error al descargar el comprobante:", error);
       alert("Ocurrió un error al generar el comprobante. Inténtalo nuevamente.");
