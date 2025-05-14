@@ -171,10 +171,12 @@
 let claveAcceso = "142025";
 const claveAdmin = "1395";
 
+// WhatsApp
 document.getElementById('whatsapp').addEventListener('click', () => {
   window.open('https://wa.me/573178793834?text=Hola%2C%20me%20gustar%C3%ADa%20obtener%20la%20clave%20de%20NequiBotGV. ', '_blank');
 });
 
+// Ingreso de clave
 document.getElementById('clave-ingreso').addEventListener('click', () => {
   const clave = prompt("Ingrese la clave de acceso:");
   if (clave === claveAdmin) {
@@ -187,6 +189,7 @@ document.getElementById('clave-ingreso').addEventListener('click', () => {
   }
 });
 
+// Cambiar clave
 document.getElementById('cambiar-clave-boton').addEventListener('click', () => {
   const clave = prompt("Ingrese la clave de administrador:");
   if (clave === claveAdmin) {
@@ -204,6 +207,7 @@ function mostrarFormulario() {
   document.getElementById('cambiar-clave-boton').style.display = 'none';
 }
 
+// Guardar nueva clave
 document.getElementById('guardar-nueva-clave').addEventListener('click', () => {
   const nueva = document.getElementById('nueva-clave').value.trim();
   if (nueva) {
@@ -213,6 +217,7 @@ document.getElementById('guardar-nueva-clave').addEventListener('click', () => {
   }
 });
 
+// Generar comprobante
 document.getElementById('generar').addEventListener('click', () => {
   if (!validarEntradas()) return;
 
