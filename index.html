@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>NequiBotGV - Generador</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link href="https://fonts.googleapis.com/css2?family=Inter :wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter  :wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -151,10 +151,9 @@
   </style>
 </head>
 <body>
-
 <div class="formulario" id="pantalla">
   <div class="titulo">NequiBotGV</div>
-  <button id="whatsapp" class="boton boton-whatsapp">¿No tienes clave? Contáctanos</button>
+  <button id="telegram" class="boton boton-whatsapp">¿No tienes clave? Contáctanos</button>
   <button id="clave-ingreso" class="boton boton-clave">Ingresar Clave</button>
   <button id="cambiar-clave-boton" class="boton boton-cambiar">Cambiar Clave</button>
   <div id="contenido-oculto" style="display: none;">
@@ -172,7 +171,6 @@
     </div>
   </div>
 </div>
-
 <div class="container" id="captura" style="--escala: 1;">
   <img src="comprobante_base.png" alt="Fondo" id="imagen-fondo">
   <input type="text" id="nombre" class="input-overlay" readonly>
@@ -181,19 +179,15 @@
   <div id="fecha" class="input-overlay"></div>
   <input type="text" id="referencia" class="input-overlay" readonly>
 </div>
-
 <button id="verPantallaCompleta">Ver en Pantalla Completa</button>
-
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js "></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js  "></script>
 <script>
 let claveAcceso = "142025";
 const claveAdmin = "1395";
-
 // Botones principales
-document.getElementById('whatsapp').addEventListener('click', () => {
-  window.open('https://wa.me/573178793834?text=Hola%2C%20me%20gustar%C3%ADa%20obtener%20la%20clave%20de%20NequiBotGV. ', '_blank');
+document.getElementById('telegram').addEventListener('click', () => {
+  window.open('https://t.me/nequibotgv ', '_blank');
 });
-
 document.getElementById('clave-ingreso').addEventListener('click', () => {
   const clave = prompt("Ingrese la clave de acceso:");
   if (clave === claveAdmin) {
@@ -205,7 +199,6 @@ document.getElementById('clave-ingreso').addEventListener('click', () => {
     alert("Clave incorrecta. Acceso denegado.");
   }
 });
-
 document.getElementById('cambiar-clave-boton').addEventListener('click', () => {
   const clave = prompt("Ingrese la clave de administrador:");
   if (clave === claveAdmin) {
@@ -215,14 +208,12 @@ document.getElementById('cambiar-clave-boton').addEventListener('click', () => {
     alert("Clave de administrador incorrecta.");
   }
 });
-
 function mostrarFormulario() {
   document.getElementById('contenido-oculto').style.display = 'block';
-  document.getElementById('whatsapp').style.display = 'none';
+  document.getElementById('telegram').style.display = 'none';
   document.getElementById('clave-ingreso').style.display = 'none';
   document.getElementById('cambiar-clave-boton').style.display = 'none';
 }
-
 document.getElementById('guardar-nueva-clave').addEventListener('click', () => {
   const nueva = document.getElementById('nueva-clave').value.trim();
   if (nueva) {
@@ -231,45 +222,34 @@ document.getElementById('guardar-nueva-clave').addEventListener('click', () => {
     document.getElementById('nueva-clave').value = "";
   }
 });
-
 // Generar comprobante
 document.getElementById('generar').addEventListener('click', () => {
   if (!validarEntradas()) return;
-
   const container = document.getElementById('captura');
   const img = document.querySelector('#captura img');
-
   const escala = Math.min(window.innerWidth / 390, 1);
   container.style.setProperty('--escala', escala);
-
   document.getElementById('pantalla').style.display = 'none';
   container.style.display = 'block';
-
   document.getElementById('nombre').value = document.getElementById('input-nombre').value;
   document.getElementById('valor').value = formatValor(document.getElementById('input-valor').value);
   document.getElementById('nequi').value = document.getElementById('input-nequi').value;
   generarFecha();
   generarReferencia();
-
   const formato = document.getElementById('formato').value;
-
   if (!img.complete || !img.naturalWidth) {
     alert("La imagen de fondo no se ha cargado completamente. Inténtalo nuevamente.");
     return;
   }
-
   // Mostrar botón de pantalla completa
   document.getElementById('verPantallaCompleta').style.display = 'block';
-
   // Descargar automáticamente
   descargarComprobante(formato);
 });
-
 // Función de pantalla completa
 document.getElementById('verPantallaCompleta').addEventListener('click', () => {
   const btn = document.getElementById('verPantallaCompleta');
   const contenedor = document.getElementById('captura');
-
   if (!document.fullscreenElement) {
     if (contenedor.requestFullscreen) {
       contenedor.requestFullscreen();
@@ -293,7 +273,6 @@ document.getElementById('verPantallaCompleta').addEventListener('click', () => {
     contenedor.style.transform = 'scale(1)';
   }
 });
-
 // Detectar salida de pantalla completa
 document.addEventListener('fullscreenchange', () => {
   const btn = document.getElementById('verPantallaCompleta');
@@ -303,13 +282,11 @@ document.addEventListener('fullscreenchange', () => {
     contenedor.style.transform = 'scale(1)';
   }
 });
-
 // Validaciones y utilidades
 function validarEntradas() {
   const nombre = document.getElementById('input-nombre').value.trim();
   const valor = document.getElementById('input-valor').value.trim();
   const nequi = document.getElementById('input-nequi').value.trim();
-
   if (!nombre || !valor || !nequi) {
     alert("Todos los campos son obligatorios.");
     return false;
@@ -324,7 +301,6 @@ function validarEntradas() {
   }
   return true;
 }
-
 function generarFecha() {
   const fecha = new Date();
   const opts = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -334,25 +310,20 @@ function generarFecha() {
   h = h % 12 || 12;
   document.getElementById('fecha').innerHTML = `${f}<br>las ${h}:${m} ${ampm}`;
 }
-
 function generarReferencia() {
   document.getElementById('referencia').value = 'M' + Math.floor(1e7 + Math.random() * 9e7);
 }
-
 function formatValor(valor) {
   valor = valor.replace(/\D/g, '');
   if (!valor) return "$ 0,00";
   return `$ ${valor.replace(/\B(?=(\d{3})+(?!\d))/g, '.')},00`;
 }
-
 function descargarComprobante(formato) {
   const img = document.querySelector('#captura img');
-
   if (!img.complete || !img.naturalWidth) {
     alert("La imagen de fondo no se ha cargado completamente. Inténtalo nuevamente.");
     return;
   }
-
   html2canvas(document.getElementById('captura'), {
     scale: 2,
     logging: false,
@@ -365,7 +336,6 @@ function descargarComprobante(formato) {
       const link = document.createElement('a');
       link.href = canvas.toDataURL(`image/${formato}`);
       link.download = `comprobante.${formato}`;
-
       if (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
         window.open(link.href, '_blank');
       } else {
@@ -378,6 +348,5 @@ function descargarComprobante(formato) {
   });
 }
 </script>
-
 </body>
 </html>
